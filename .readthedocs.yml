@@ -1,6 +1,10 @@
 version: 2
 
+sphinx:
+    configuration: .readthedocs.yml
+
 formats: []
 
 build:
   image: latest
+
