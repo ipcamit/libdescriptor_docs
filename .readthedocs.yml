@@ -1,7 +1,7 @@
 version: 2
 
 sphinx:
-    configuration: .readthedocs.yml
+    configuration: ./conf.py
 
 formats: []
 
@@ -10,5 +10,3 @@ build:
   tools:
     python: "3.10"
 
-html:
-  directory: ./
