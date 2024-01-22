@@ -6,5 +6,4 @@ sphinx:
 formats: []
 
 build:
-  image: latest
-
+  os: ubuntu-22.04
