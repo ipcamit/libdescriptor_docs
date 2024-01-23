@@ -3,8 +3,8 @@
    You can adapt this file completely to your liking, but it should at least
    contain the root `toctree` directive.
 
-Welcome to Libdescriptor's documentation!
-=========================================
+Libdescriptor: Fully differentiable atomic descriptors
+======================================================
 Libdescriptor is a library for computing atomic descriptors. It is written in C++ and has
 extensive Python bindings. It is designed to be fast and flexible, and to be easily extended
 with new descriptors. Its major design goal include using automatic differentiation to compute
@@ -13,7 +13,12 @@ respect to the descriptor parameters. It uses state of the art `Enzyme AD <https
 differentiation.
 
 Libdescriptor comes bundled with minimal support for neighbor lists, and ability to compute descriptors for
-ASE atoms objects.
+ASE atoms objects. Libdescriptor provides a unified API to compute and train the descriptors in Python
+and transfer the descriptors to C++ for production MD simulations.
+
+.. image:: /_static/libdescriptor.svg
+    :align: center
+    :alt: libdescriptor
 
 Contents:
 --------
@@ -25,6 +30,10 @@ Contents:
    tutorial
    installation
    design
+   enzyme
+   libdescriptor
+   neighbor
+
 
 Indices and tables
 ==================
