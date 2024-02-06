@@ -6,7 +6,7 @@
 <link rel="index" title="Index" href="genindex.html" /><link rel="search" title="Search" href="search.html" /><link rel="next" title="Brief Introduction to Enzyme AD" href="enzyme.html" /><link rel="prev" title="Installation" href="installation.html" />
 
     <!-- Generated with Sphinx 6.1.3 and Furo 2023.03.27 -->
-        <title>&lt;no title&gt; - Libdescriptor 0.0.6 documentation</title>
+        <title>Design - Libdescriptor 0.0.6 documentation</title>
       <link rel="stylesheet" type="text/css" href="_static/pygments.css" />
     <link rel="stylesheet" type="text/css" href="_static/styles/furo.css?digest=fad236701ea90a88636c2a8c73b44ae642ed2a53" />
     <link rel="stylesheet" type="text/css" href="_static/styles/furo-extensions.css?digest=30d1aed668e5c3a91c3e3bf6a60b675221979f0e" />
@@ -157,9 +157,10 @@
 </form>
 <div id="searchbox"></div><div class="sidebar-scroll"><div class="sidebar-tree">
   <p class="caption" role="heading"><span class="caption-text">Contents:</span></p>
-<ul>
+<ul class="current">
 <li class="toctree-l1"><a class="reference internal" href="tutorial.html">Tutorial</a></li>
 <li class="toctree-l1"><a class="reference internal" href="installation.html">Installation</a></li>
+<li class="toctree-l1 current current-page"><a class="current reference internal" href="#">Design</a></li>
 <li class="toctree-l1"><a class="reference internal" href="enzyme.html">Brief Introduction to Enzyme AD</a></li>
 <li class="toctree-l1"><a class="reference internal" href="libdescriptor.html">Libdescriptor API</a></li>
 <li class="toctree-l1"><a class="reference internal" href="neighbor.html">Neighbor API</a></li>
@@ -197,7 +198,35 @@
           </label>
         </div>
         <article role="main">
-          
+          <section id="design">
+<h1>Design<a class="headerlink" href="#design" title="Permalink to this heading">#</a></h1>
+<p>The python package is just a pybind11 wrapper around the C++ code.
+The C++ code is designed in the following hierarchy:</p>
+<figure class="align-center" id="id1">
+<a class="reference internal image-reference" href="_images/libdescriptorDesign.svg"><img alt="_images/libdescriptorDesign.svg" src="_images/libdescriptorDesign.svg" width="100%" /></a>
+<figcaption>
+<p><span class="caption-text">UML diagram of the C++ code</span><a class="headerlink" href="#id1" title="Permalink to this image">#</a></p>
+</figcaption>
+</figure>
+<p>Here namespace <code class="docutils literal notranslate"><span class="pre">Descriptor</span></code> contains the main <code class="docutils literal notranslate"><span class="pre">DescriptorKind</span></code> class, enumerated types for
+supported descriptor types (<code class="docutils literal notranslate"><span class="pre">AvailableDescriptors</span></code> and all the utility functions for descriptor
+generation and manipulation.</p>
+<p>The <code class="docutils literal notranslate"><span class="pre">DescriptorKind</span></code> class is the main class that is used to generate descriptors, and it is
+interfaced by the individual descriptor classes. It is done by inheriting from the <code class="docutils literal notranslate"><span class="pre">DescriptorKind</span></code>
+and implementing the pure virtual function, <code class="docutils literal notranslate"><span class="pre">DescriptorKind::compute</span></code>. Hence all of the computational
+work is done in the <code class="docutils literal notranslate"><span class="pre">DescriptorKind::compute</span></code> function. <code class="docutils literal notranslate"><span class="pre">compute</span></code> implements calculation for a single atomic environment,
+and gradients are generated automatically in the <code class="docutils literal notranslate"><span class="pre">Descriptor::gradient</span></code> and <code class="docutils literal notranslate"><span class="pre">Descriptor::gradient_single_atom</span></code> functions.</p>
+<p>To ensure that your implemented descriptor class does get differentiated, you need to hook it in the <code class="docutils literal notranslate"><span class="pre">Descriptor::compute...</span></code> and
+<code class="docutils literal notranslate"><span class="pre">Descriptor::gradient...</span></code> functions. This is done by adding a new case in the switch statement in the <code class="docutils literal notranslate"><span class="pre">Descriptor::compute...</span></code> and
+<code class="docutils literal notranslate"><span class="pre">Descriptor::gradient...</span></code> functions. You would also need to implement appropriate <code class="docutils literal notranslate"><span class="pre">DescriptorKind::initDescriptor</span></code> overloaded function.
+This is done so that at runtime any descriptor can be initialized with the <code class="docutils literal notranslate"><span class="pre">DescriptorKind</span></code> class, and the individual
+descriptors implementations are abstracted away. This ensures a more portable implementation for end user cases.</p>
+<p>For hooking the gradient function you also need to implement a <code class="docutils literal notranslate"><span class="pre">clone_empty</span></code> function in your descriptor class. This is used to
+generate a <code class="docutils literal notranslate"><span class="pre">__enzyme_virtual</span></code> class for the gradient computation. This class contains gradients against all of your class members
+but currently this class is deleted post computation. In future releases I plan to provide a way to access these gradients as well.</p>
+<p>Please let me know if you have any questions or need help with implementing a new descriptor.</p>
+</section>
+
         </article>
       </div>
       <footer>
