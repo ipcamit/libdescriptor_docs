@@ -130,3 +130,51 @@ to the gradient function.
 
     print(gradient)
     # should print the gradient of the descriptor
+
+Batched mode
+^^^^^^^^^^^^
+
+In addition to per configuration computation, libdescriptor also provides efficient computation functions for 
+evaluating derivatives and descriptors of batches of configuration. This is more convenient and efficient method,
+over individual configuration elvaulation, as it utilizes fewer function calls.
+
+Batched mode is made to be integrated directly in most ML operations. A simple example of batched configuration 
+can be seen below.
+
+.. code-block:: python
+    
+    config1 = atoms[0]
+    config2 = atoms[1]
+
+    nl1 = NeighborList(config1, 4.0)
+    nl2 = NeighborList(config2, 4.0)
+
+    num_neigh1, neigh_list1 = nl1.get_numneigh_and_neighlist_1D()
+    num_neigh2, neigh_list2 = nl2.get_numneigh_and_neighlist_1D()
+
+    species1 = nl1.get_species_code(element_map)
+    species2 = nl2.get_species_code(element_map)
+
+    coords1 = nl1.coords 
+    coords2 = nl2.coords
+
+    n_atoms1 = 10
+    n_atoms2 = 10
+
+    # create batch
+    n_atoms = n_atoms1 + n_atoms2
+    species = np.concatenate((species1, species2))
+    coords = np.concatenate((coords1, coords2))
+    num_neigh = np.concatenate((num_neigh1, num_neigh2))
+    neigh_list = np.concatenate((neigh_list1, neigh_list2 + coords1.shape[0])) # shift the indices for the second configuration
+    n_atoms_list = np.array([n_atoms1, n_atoms2], dtype=np.intc)
+    ptr = np.array([0, nl1.coords.shape[0]], dtype=np.intc)
+
+    # Compute the descriptor in batched mode
+    config_desc_batched = lds.compute_batch(descriptor, n_atoms_list, ptr, species, neigh_list, num_neigh, coords)
+
+    # Compute the gradient in batched mode
+    grad_batch = lds.gradient_batch(descriptor, n_atoms_list, ptr, species, neigh_list, num_neigh, coords, config_desc, np.ones_like(config_desc))
+
+
+Now if you will compare the output of above method with the individual configuration evaluation, you will see that the output is same.

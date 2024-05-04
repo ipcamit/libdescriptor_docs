@@ -90,7 +90,7 @@ libdescriptor library python module.
             :param species: The species of the atoms.
             :param cutoff_fun: The cutoff function.
             :param cutoff_mat: The cutoff matrix.
-            :param sym_fun_list: The symmetry functions ``g1`` ... ```g5`.
+            :param sym_fun_list: The symmetry functions ``g1`` ... ``g5``.
             :param sym_fun_sizes: The symmetry function sizes.
             :param sym_fun_param: The symmetry function parameters.
 
@@ -201,6 +201,41 @@ libdescriptor library python module.
     :param dE_dzeta: The gradient of the energy with respect to the descriptor.
 
     :return: The gradient of the descriptor as a numpy array.
+
+
+.. method:: compute_batch(descriptor_class: DescriptorKind, n_atoms: np.ndarray[int32], config_ptr: np.ndarray[int32], species: np.ndarray[int32], neighbor_idx: np.ndarray[int32], num_neighbors: np.ndarray[int32], coordinates: np.ndarray) -> np.ndarray
+
+    Compute the descriptor for the atoms with given species, neighbors and coordinates. This method is more efficient than
+    calling :meth:`compute_single_atom` for each atom.
+
+    :param descriptor_class: The initialized descriptor class.
+    :param n_atoms: The number of atoms in each configuration.
+    :param config_ptr: The pointer to the start of each configuration coordinates. The length of this array should be same as ``n_atoms``.
+    :param species: The array of species indexes of the atoms.
+    :param neighbor_idx: The array of neighbors indexes of the atoms.
+    :param num_neighbors: The array of number of neighbors of the atoms.
+    :param coordinates: The array of coordinates of the atoms.
+
+    :return: The descriptor as a numpy array.
+
+.. method:: gradient_batch(descriptor_class: DescriptorKind, n_atoms: np.ndarray[int32], config_ptr: np.ndarray[int32], species: np.ndarray[int32], neighbor_idx: np.ndarray[int32], num_neighbors: np.ndarray[int32], coordinates: np.ndarray, computed_desc: np.ndarray, dE_dzeta: np.ndarray) -> np.ndarray
+
+    Compute the gradient of the descriptor for the atoms with given species, neighbors and coordinates. This method is more efficient than
+    calling :meth:`gradient_single_atom` for each atom.
+
+    :param descriptor_class: The initialized descriptor class.
+    :param n_atoms: The number of atoms in each configuration.
+    :param config_ptr: The pointer to the start of each configuration coordinates. The length of this array should be same as ``n_atoms``.
+    :param species: The array of species indexes of the atoms.
+    :param neighbor_idx: The array of neighbors indexes of the atoms.
+    :param num_neighbors: The array of number of neighbors of the atoms.
+    :param coordinates: The array of coordinates of the atoms.
+    :param computed_desc: The computed descriptor of the environment.
+    :param dE_dzeta: The gradient of the energy with respect to the descriptor.
+
+    :return: The gradient of the descriptor as a numpy array.
+
+
 
 .. method:: jacobian(descriptor_class: DescriptorKind, n_atoms: int, species: np.ndarray[int32], neighbor_idx: np.ndarray[int32], num_neighbors: np.ndarray[int32], coordinates: np.ndarray) -> np.ndarray
 
